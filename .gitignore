@@ -1,0 +1,5 @@
+a.out
+*.o
+*.hi
+*.sw?
+test
