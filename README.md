@@ -8,7 +8,5 @@ Simple word size histogram maker.
 
 ## TODO
 
-* file readin
-  * mapM readFile ARGV or something?
 * put words on left like a normal person?
 * cabal
