@@ -7,7 +7,9 @@ import System.Environment
 
 data HistogramKey = Key (String, Int) deriving (Show)
 
+--TODO
 getName (Key (name, _)) = name
+getValue (Key (_, value)) = value
 
 strToLower = map toLower
 
@@ -23,17 +25,25 @@ toLowerWords str = map (stripPunctuation . strToLower) (words str)
 
 padWord word padLength = word ++ replicate (padLength - length word) ' '
 
-showKey longest (Key (name, count)) = padWord name longest ++ " : " ++ replicate count 'X'
+--TODO: 80 -> pass in value
+numXs count highestCount = 
+  if highestCount < 80 
+  then count 
+  else floor $ (toRational count / (toRational highestCount / 80))
+
+showKey longestWord highestCount (Key (name, count)) = 
+  padWord name longestWord ++ " : " ++ replicate (numXs count highestCount) 'X'
 
 showHistogram :: [HistogramKey] -> IO ()
 showHistogram pairs = do
-  let longest = length $ maximumBy (comparing length) (map getName pairs)
-  putStrLn $ intercalate "\n" $ map (showKey longest) pairs
+  let longestWord = length $ maximumBy (comparing length) (map getName pairs)
+  let largestKey = maximum (map getValue pairs)
+  putStrLn $ intercalate "\n" $ map (showKey longestWord largestKey) pairs
 
 -- 80 char max
 main = do
   --args <- getArgs
-  let args = ["test"]
+  let args = ["test1"]
 
   contents <- 
     fmap toLowerWords $ 
