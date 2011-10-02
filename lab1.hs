@@ -11,10 +11,14 @@ data HistogramKey = Key (String, Int) deriving (Show)
 getName (Key (name, _)) = name
 getValue (Key (_, value)) = value
 
+maxWidth = 80
+
+separation = " : "
+
 strToLower = map toLower
 
 stripPunctuation word 
-  | startsWithPunct word = stripPunctuation $ tail word
+  | startsWithPunct word           = stripPunctuation $ tail word
   | startsWithPunct $ reverse word = stripPunctuation $ init word
   | otherwise = word
   where
@@ -26,24 +30,23 @@ toLowerWords str = map (stripPunctuation . strToLower) (words str)
 padWord word padLength = word ++ replicate (padLength - length word) ' '
 
 --TODO: 80 -> pass in value
-numXs count highestCount = 
-  if highestCount < 80 
+numXs count highestCount longestWord = 
+  if highestCount < biggestNumOfXs 
   then count 
-  else floor $ (toRational count / (toRational highestCount / 80))
+  else floor $ (toRational count / (toRational highestCount / toRational biggestNumOfXs))
+  where
+    biggestNumOfXs = maxWidth - longestWord - length separation
 
 showKey longestWord highestCount (Key (name, count)) = 
-  padWord name longestWord ++ " : " ++ replicate (numXs count highestCount) 'X'
+  padWord name longestWord ++ separation ++ replicate (numXs count highestCount longestWord) 'X'
 
-showHistogram :: [HistogramKey] -> IO ()
 showHistogram pairs = do
   let longestWord = length $ maximumBy (comparing length) (map getName pairs)
   let largestKey = maximum (map getValue pairs)
   putStrLn $ intercalate "\n" $ map (showKey longestWord largestKey) pairs
 
--- 80 char max
 main = do
-  --args <- getArgs
-  let args = ["test1"]
+  args <- getArgs
 
   contents <- 
     fmap toLowerWords $ 
