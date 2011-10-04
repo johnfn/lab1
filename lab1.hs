@@ -7,7 +7,6 @@ import System.Environment
 
 data HistogramKey = Key (String, Int) deriving (Show)
 
---TODO
 getName (Key (name, _)) = name
 getValue (Key (_, value)) = value
 
