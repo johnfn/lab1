@@ -17,6 +17,7 @@ separation = " : "
 
 strToLower = map toLower
 
+stripPunctuation "" = ""
 stripPunctuation word 
   | startsWithPunct word           = stripPunctuation $ tail word
   | startsWithPunct $ reverse word = stripPunctuation $ init word
@@ -25,11 +26,10 @@ stripPunctuation word
     punctuation = "!@#$%^&*()_+-={}|[]\\:\";'<>?,./"
     startsWithPunct str = any id (map (== head str) punctuation) 
 
-toLowerWords str = map (stripPunctuation . strToLower) (words str)
+toLowerWords str = filter (/= "") $ map (stripPunctuation . strToLower) (words str)
 
 padWord word padLength = word ++ replicate (padLength - length word) ' '
 
---TODO: 80 -> pass in value
 numXs count highestCount longestWord = 
   if highestCount < biggestNumOfXs 
   then count 
